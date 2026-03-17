@@ -45,5 +45,12 @@ export function getSectionsPopulate(components: string[] = []) {
 
 // Minimal universal population for common sections
 export const UNIVERSAL_POPULATE = getSectionsPopulate([
-  'hero', 'hero-intro', 'content', 'slider', 'article', 'blog-quote', 'also-read', 'pricing-tiers', 'faq', 'cta'
+  'hero', 'hero-intro', 'content', 'slider', 'article',
+  'blog-quote', 'also-read', 'cta', 'pricing-tiers', 'faq',
+  'pricing', 'gallery', 'image-repeater', 'image', 'contact',
+  'three-column-img-content', 'expertise-content',
+  'equal-grid', 'unsequenced-grid', 'quote',
+  'two-column-img-content', 'image-text',
+  'image-text-highlighted', 'two-column-image',
+  'text-highlighted', 'thank-you', 'filled-box', 'about'
 ]);

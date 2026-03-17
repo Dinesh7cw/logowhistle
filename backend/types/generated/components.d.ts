@@ -404,6 +404,18 @@ export interface SharedItemWithImage extends Struct.ComponentSchema {
   };
 }
 
+export interface SharedNavLink extends Struct.ComponentSchema {
+  collectionName: 'components_shared_nav_links';
+  info: {
+    displayName: 'Nav Link';
+    icon: 'link';
+  };
+  attributes: {
+    href: Schema.Attribute.String & Schema.Attribute.Required;
+    label: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
 export interface SharedSlide extends Struct.ComponentSchema {
   collectionName: 'components_shared_slides';
   info: {
@@ -462,6 +474,7 @@ declare module '@strapi/strapi' {
       'sections.two-column-img-content': SectionsTwoColumnImgContent;
       'sections.unsequenced-grid': SectionsUnsequencedGrid;
       'shared.item-with-image': SharedItemWithImage;
+      'shared.nav-link': SharedNavLink;
       'shared.slide': SharedSlide;
       'shared.text-item': SharedTextItem;
     }

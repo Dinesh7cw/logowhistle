@@ -1,8 +1,48 @@
 import { fetchStrapi, getStrapiMedia, UNIVERSAL_POPULATE } from '@/lib/strapi';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import SectionRenderer from '@/components/blog-sections';
-import { parseMarkdown } from '@/lib/markdown';
+import { Metadata } from 'next';
+
+export async function generateStaticParams() {
+  try {
+    const posts = await fetchStrapi('blog-posts?fields[0]=slug&pagination[pageSize]=100');
+    return posts.map((post: any) => ({
+      slug: post.slug,
+    }));
+  } catch (error) {
+    console.error('Error generating static params:', error);
+    return [];
+  }
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const posts = await fetchStrapi(`blog-posts?filters[slug][$eq]=${slug}&populate[featuredImage]=true`);
+  const post = posts?.[0];
+
+  if (!post) return {};
+
+  const imageUrl = getStrapiMedia(post.featuredImage) || '';
+
+  return {
+    title: post.title,
+    description: post.excerpt || `Read more about ${post.title}`,
+    openGraph: {
+      title: post.title,
+      description: post.excerpt,
+      images: imageUrl ? [{ url: imageUrl }] : [],
+      type: 'article',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description: post.excerpt,
+      images: imageUrl ? [imageUrl] : [],
+    }
+  };
+}
 
 export default async function BlogPost({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -30,11 +70,13 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
       <section className="pt-12 pb-16 px-4 md:px-8">
         <div className="max-w-[900px] mx-auto text-center">
           {/* Featured Image */}
-          <div className="mb-12 overflow-hidden bg-white">
-            <img
+          <div className="mb-12 overflow-hidden bg-white relative aspect-[16/9] max-h-[600px]">
+            <Image
               src={getStrapiMedia(post.featuredImage) || ''}
               alt={post.title}
-              className="w-full h-auto object-cover max-h-[600px]"
+              fill
+              priority
+              className="object-cover"
             />
           </div>
 
@@ -94,11 +136,12 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                 href={`/blog/${related.slug}`}
                 className="group block text-left"
               >
-                <div className="aspect-[16/9] overflow-hidden mb-5 bg-gray-100">
-                  <img
-                    src={getStrapiMedia(related.featuredImage) || null}
+                <div className="aspect-[16/9] overflow-hidden mb-5 bg-gray-100 relative">
+                  <Image
+                    src={getStrapiMedia(related.featuredImage) || ''}
                     alt={related.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 </div>
                 <div className="text-[10px] uppercase tracking-[0.2em] text-[#888] mb-2">

@@ -5,7 +5,7 @@ export default async function Navbar() {
   let globalSettings: any = null;
 
   try {
-    globalSettings = await fetchStrapi('global?populate=*');
+    globalSettings = await fetchStrapi('global?populate[0]=logo&populate[1]=nav_links');
   } catch (e) {
     console.error('Failed to fetch global settings for navbar', e);
   }

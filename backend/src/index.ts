@@ -11,23 +11,22 @@ export default {
     if (!publicRole) return;
 
     const contentTypes = [
-      'api::global.global',
-      'api::homepage.homepage',
-      'api::portfolio-item.portfolio-item',
-      'api::portfolio-page.portfolio-page',
-      'api::process-page.process-page',
-      'api::pricing-page.pricing-page',
-      'api::faq-item.faq-item',
-      'api::blog-post.blog-post',
-      'api::blog-page.blog-page',
-      'api::contact-page.contact-page',
+      { uid: 'api::global.global', actions: ['find', 'findOne'] },
+      { uid: 'api::homepage.homepage', actions: ['find', 'findOne'] },
+      { uid: 'api::portfolio-item.portfolio-item', actions: ['find', 'findOne'] },
+      { uid: 'api::portfolio-page.portfolio-page', actions: ['find', 'findOne'] },
+      { uid: 'api::process-page.process-page', actions: ['find', 'findOne'] },
+      { uid: 'api::pricing-page.pricing-page', actions: ['find', 'findOne'] },
+      { uid: 'api::faq-item.faq-item', actions: ['find', 'findOne'] },
+      { uid: 'api::blog-post.blog-post', actions: ['find', 'findOne'] },
+      { uid: 'api::blog-page.blog-page', actions: ['find', 'findOne'] },
+      { uid: 'api::contact-page.contact-page', actions: ['find', 'findOne'] },
+      { uid: 'api::contact-inquiry.contact-inquiry', actions: ['create'] },
     ];
 
-    const actions = ['find', 'findOne', 'create', 'update'];
-
     for (const ct of contentTypes) {
-      for (const action of actions) {
-        const actionString = `${ct}.${action}`;
+      for (const actionName of ct.actions) {
+        const actionString = `${ct.uid}.${actionName}`;
         const existing = await strapi.db.query('plugin::users-permissions.permission').findOne({
           where: { action: actionString, role: publicRole.id }
         });

@@ -53,6 +53,7 @@ images/
 db_rollback_blog.js
 db_restore_final.js
 db_restore_full.js
+db_restore_v2.js
 db_inspect.js
 check_api.js
 current_api_response.json
@@ -60,3 +61,6 @@ local_site_final_rollback.png
 local_site_rollback.png
 live_site_comparison_full.png
 verified_final_restoration_v2.png
+
+# Dev Scripts
+backend/dev-scripts/

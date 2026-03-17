@@ -20,8 +20,7 @@ export default function ContactForm({ description }: { description?: string }) {
     };
 
     try {
-      const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://127.0.0.1:1337';
-      const res = await fetch(`${strapiUrl}/api/contact-inquiries`, {
+      const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),

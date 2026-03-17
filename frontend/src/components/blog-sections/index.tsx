@@ -1,7 +1,10 @@
 import { getStrapiMedia, fetchStrapi } from '@/lib/strapi';
 import { parseMarkdown } from "@/lib/markdown";
 import Link from 'next/link';
+import Image from 'next/image';
+import DOMPurify from 'isomorphic-dompurify';
 import ContactForm from '../ContactForm';
+import { useState } from 'react';
 
 // Hero Section
 export const DynamicHero = ({ data, noMargin }: { data: any, noMargin?: boolean }) => (
@@ -17,9 +20,11 @@ export const DynamicHero = ({ data, noMargin }: { data: any, noMargin?: boolean 
 
     {data.dividerImage && (
       <div className="w-full flex justify-center pb-0 mt-[20px]">
-        <img 
+        <Image 
           src={getStrapiMedia(data.dividerImage)} 
           alt="Divider" 
+          width={200}
+          height={100}
           className="h-[100px] w-auto object-contain"
         />
       </div>
@@ -47,8 +52,9 @@ export const DynamicHero = ({ data, noMargin }: { data: any, noMargin?: boolean 
 export const HeroIntro = ({ data, noMargin }: { data: any, noMargin?: boolean }) => (
   <section className={`relative h-[600px] flex items-center justify-center overflow-hidden ${noMargin ? 'mb-0' : 'mb-20'} rounded-xl`}>
     {data.background_image && (
-      <img
+      <Image
         src={getStrapiMedia(data.background_image)}
+        fill
         className="absolute inset-0 w-full h-full object-cover"
         alt={data.title}
       />
@@ -61,7 +67,7 @@ export const HeroIntro = ({ data, noMargin }: { data: any, noMargin?: boolean })
       <h1 className="text-5xl md:text-7xl font-bold mb-6" style={{ fontFamily: "'Work Sans', sans-serif" }}>
         {data.title}
       </h1>
-      <div className="text-lg mb-8 opacity-90" dangerouslySetInnerHTML={{ __html: parseMarkdown(data.description) }} />
+      <div className="text-lg mb-8 opacity-90" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(parseMarkdown(data.description)) }} />
       {data.button_text && (
         <a href={data.button_link} className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 rounded-full font-bold transition-all">
           {data.button_text}
@@ -84,9 +90,11 @@ export const ImageGrid = ({ data }: { data: any }) => (
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {(data.images?.data || data.images)?.map((img: any, idx: number) => (
           <div key={idx} className="aspect-square overflow-hidden rounded-lg">
-            <img
+            <Image
               src={getStrapiMedia(img)}
               alt={`Gallery ${idx}`}
+              width={400}
+              height={400}
               className="w-full h-full object-cover"
             />
           </div>
@@ -108,9 +116,11 @@ export const ImageRepeater = ({ data }: { data: any }) => (
       <div className="flex flex-wrap items-center justify-between gap-y-10">
         {(data.images?.data || data.images)?.map((img: any, idx: number) => (
           <div key={idx} className="flex items-center justify-center">
-            <img
+            <Image
               src={getStrapiMedia(img)}
               alt={`Feature ${idx}`}
+              width={150}
+              height={80}
               className="w-auto object-contain"
             />
           </div>
@@ -130,11 +140,11 @@ export const Content = ({ data, noMargin }: { data: any, noMargin?: boolean }) =
         </h2>
       )}
       <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed" 
-           dangerouslySetInnerHTML={{ __html: parseMarkdown(data.content) }} />
+           dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(parseMarkdown(data.content)) }} />
     </div>
     {data.image && (
       <div className="w-full md:w-1/2">
-        <img src={getStrapiMedia(data.image)} alt={data.title} className="w-full h-auto rounded-lg shadow-md" />
+        <Image src={getStrapiMedia(data.image)} alt={data.title} width={600} height={400} className="w-full h-auto rounded-lg shadow-md" />
       </div>
     )}
   </section>
@@ -153,7 +163,7 @@ export const Pricing = ({ data }: { data: any }) => (
         <div key={idx} className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 hover:scale-105 transition-transform">
           <h3 className="text-xl font-bold mb-2">{item.plan_title}</h3>
           <div className="text-4xl font-bold text-orange-600 mb-4">{item.price}</div>
-          <div className="text-gray-600 mb-6" dangerouslySetInnerHTML={{ __html: parseMarkdown(item.description) }} />
+          <div className="text-gray-600 mb-6" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(parseMarkdown(item.description)) }} />
           <ul className="mb-8 space-y-3">
             {item.features?.map((f: any, i: number) => (
               <li key={i} className="flex items-center gap-2 text-sm text-gray-700">
@@ -189,9 +199,11 @@ export const PricingTiers = ({ data }: { data: any }) => (
           {/* Package Icon */}
           <div className="mb-4 min-h-[120px] flex items-center justify-center">
             {tier.packageIcon ? (
-              <img 
+              <Image 
                 src={getStrapiMedia(tier.packageIcon)} 
                 alt={tier.packageName} 
+                width={120}
+                height={120}
                 className="max-w-full h-auto object-contain"
               />
             ) : (
@@ -249,11 +261,11 @@ const ColumnItem = ({ item }: { item: any }) => (
   <div className="flex flex-col items-center text-center group">
     {item.image && (
       <div className="w-20 h-20 mb-6 group-hover:scale-110 transition-transform">
-        <img src={getStrapiMedia(item.image)} alt={item.title} className="w-full h-full object-contain" />
+        <Image src={getStrapiMedia(item.image)} alt={item.title} width={80} height={80} className="w-full h-full object-contain" />
       </div>
     )}
     <h3 className="text-xl font-bold mb-3">{item.title}</h3>
-    <div className="text-gray-600 text-sm leading-relaxed mb-4" dangerouslySetInnerHTML={{ __html: parseMarkdown(item.description) }} />
+    <div className="text-gray-600 text-sm leading-relaxed mb-4" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(parseMarkdown(item.description)) }} />
     {item.link && (
       <a href={item.link} className="text-orange-600 font-semibold text-xs uppercase tracking-widest hover:underline">
         Learn More →
@@ -290,11 +302,11 @@ const ExpertiseRow = ({ item }: { item: any }) => (
   <div className="flex flex-col md:flex-row gap-10 items-start mb-14 last:mb-0">
     <div className="w-full md:w-[35%] flex items-center justify-center pt-2">
       {item.image && (
-        <img src={getStrapiMedia(item.image)} alt="Expertise Icon" className="max-w-full h-auto object-contain" />
+        <Image src={getStrapiMedia(item.image)} alt="Expertise Icon" width={300} height={200} className="max-w-full h-auto object-contain" />
       )}
     </div>
     <div className="w-full md:w-[65%] text-[15px] leading-[1.8] text-[#444]">
-      <div dangerouslySetInnerHTML={{ __html: parseMarkdown(item.description || '') }} />
+      <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(parseMarkdown(item.description || '')) }} />
     </div>
   </div>
 );
@@ -317,28 +329,75 @@ export const ExpertiseList = ({ data }: { data: any }) => (
 );
 
 // Slider Section
-export const SliderSection = ({ data }: { data: any }) => (
-  <section className="mb-20 overflow-hidden relative group">
-    <div className="flex transition-transform duration-500">
-      {data.slides?.map((slide: any, idx: number) => (
-        <div key={idx} className="min-w-full relative h-[500px]">
-          {slide.image && (
-            <img src={getStrapiMedia(slide.image)} alt={slide.title} className="w-full h-full object-cover" />
-          )}
-          <div className="absolute inset-0 bg-black/30 flex flex-col justify-center px-20 text-white">
-            <h3 className="text-4xl font-bold mb-4">{slide.title}</h3>
-            <div className="text-lg max-w-xl mb-8" dangerouslySetInnerHTML={{ __html: parseMarkdown(slide.description) }} />
-            {slide.button_text && (
-              <a href={slide.button_link} className="bg-white text-black px-6 py-3 rounded-full font-bold w-fit hover:bg-orange-600 hover:text-white transition-all">
-                {slide.button_text}
-              </a>
+export const SliderSection = ({ data }: { data: any }) => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const slides = data.slides || [];
+
+  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
+  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+
+  if (!slides.length) return null;
+
+  return (
+    <section className="mb-20 overflow-hidden relative group">
+      <div 
+        className="flex transition-transform duration-500 ease-in-out" 
+        style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+      >
+        {slides.map((slide: any, idx: number) => (
+          <div key={idx} className="min-w-full relative h-[500px]">
+            {slide.image && (
+              <Image 
+                src={getStrapiMedia(slide.image)} 
+                alt={slide.title} 
+                fill
+                className="w-full h-full object-cover" 
+              />
             )}
+            <div className="absolute inset-0 bg-black/30 flex flex-col justify-center px-20 text-white">
+              <h3 className="text-4xl font-bold mb-4">{slide.title}</h3>
+              <div className="text-lg max-w-xl mb-8" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(parseMarkdown(slide.description)) }} />
+              {slide.button_text && (
+                <a href={slide.button_link} className="bg-white text-black px-6 py-3 rounded-full font-bold w-fit hover:bg-orange-600 hover:text-white transition-all">
+                  {slide.button_text}
+                </a>
+              )}
+            </div>
           </div>
-        </div>
-      ))}
-    </div>
-  </section>
-);
+        ))}
+      </div>
+      
+      {/* Navigation Buttons */}
+      {slides.length > 1 && (
+        <>
+          <button 
+            onClick={prevSlide}
+            className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 p-3 rounded-full text-white backdrop-blur-sm transition-all opacity-0 group-hover:opacity-100"
+          >
+            ←
+          </button>
+          <button 
+            onClick={nextSlide}
+            className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 p-3 rounded-full text-white backdrop-blur-sm transition-all opacity-0 group-hover:opacity-100"
+          >
+            →
+          </button>
+
+          {/* Indicators */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+            {slides.map((_: any, i: number) => (
+              <button
+                key={i}
+                onClick={() => setCurrentSlide(i)}
+                className={`w-2.5 h-2.5 rounded-full transition-all ${currentSlide === i ? 'bg-orange-600 w-8' : 'bg-white/50'}`}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </section>
+  );
+};
 
 // Image Section
 export const ImageSection = ({ data, noMargin }: { data: any, noMargin?: boolean }) => (
@@ -350,9 +409,11 @@ export const ImageSection = ({ data, noMargin }: { data: any, noMargin?: boolean
         </h2>
       )}
       <div className="w-full">
-        <img 
+        <Image 
           src={getStrapiMedia(data.image)} 
           alt={data.section_title || 'Section Image'} 
+          width={1240}
+          height={800}
           className="w-full h-auto" 
         />
       </div>
@@ -445,12 +506,12 @@ export const ContactSection = ({ data }: { data: any }) => (
 export const TwoColumn = ({ data }: { data: any }) => (
   <section className={`mb-20 flex flex-col ${data.image_position === 'right' ? 'md:flex-row-reverse' : 'md:flex-row'} gap-12 items-center`}>
     <div className="w-full md:w-1/2">
-      <img src={getStrapiMedia(data.image || data.image_left)} alt={data.title} className="w-auto h-auto" />
+      <Image src={getStrapiMedia(data.image || data.image_left)} alt={data.title} width={600} height={400} className="w-auto h-auto" />
     </div>
     <div className="w-full md:w-1/2">
       {data.title && <h2 className="text-4xl font-bold mb-6">{data.title}</h2>}
       {data.highlighted_text && <div className="text-orange-600 font-bold text-xl mb-4">{data.highlighted_text}</div>}
-      <div className="text-gray-600 text-lg mb-8 leading-relaxed" dangerouslySetInnerHTML={{ __html: parseMarkdown(data.description) }} />
+      <div className="text-gray-600 text-lg mb-8 leading-relaxed" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(parseMarkdown(data.description)) }} />
       {data.button_text && (
         <a href={data.button_link} className="inline-block bg-orange-600 text-white px-8 py-4 rounded-full font-bold hover:bg-black transition-colors">
           {data.button_text}
@@ -464,8 +525,8 @@ export const TwoColumn = ({ data }: { data: any }) => (
 export const TwoColumnImage = ({ data }: { data: any }) => (
   <section className="mb-20">
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-4">
-      <img src={getStrapiMedia(data.image_left)} className="w-auto h-auto" alt="Left" />
-      <img src={getStrapiMedia(data.image_right)} className="w-auto h-auto" alt="Right" />
+      <Image src={getStrapiMedia(data.image_left)} width={600} height={400} className="w-auto h-auto" alt="Left" />
+      <Image src={getStrapiMedia(data.image_right)} width={600} height={400} className="w-auto h-auto" alt="Right" />
     </div>
     {data.caption && <p className="text-center text-gray-500 italic">{data.caption}</p>}
   </section>
@@ -476,7 +537,7 @@ export const TextHighlighted = ({ data }: { data: any }) => (
   <section className="mb-20 text-center max-w-4xl mx-auto px-4">
     {data.title && <h3 className="text-orange-600 font-bold uppercase tracking-widest mb-4">{data.title}</h3>}
     <h2 className="text-4xl md:text-5xl font-bold mb-8 leading-tight">{data.highlighted_text}</h2>
-    <div className="text-xl text-gray-600 leading-relaxed" dangerouslySetInnerHTML={{ __html: parseMarkdown(data.description) }} />
+    <div className="text-xl text-gray-600 leading-relaxed" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(parseMarkdown(data.description)) }} />
   </section>
 );
 
@@ -486,7 +547,7 @@ export const ThankYou = ({ data }: { data: any }) => (
     <h2 className="text-6xl font-bold mb-6 text-orange-600" style={{ fontFamily: "'Work Sans', sans-serif" }}>
       {data.title}
     </h2>
-    <div className="text-xl text-gray-700 mb-10" dangerouslySetInnerHTML={{ __html: parseMarkdown(data.description) }} />
+    <div className="text-xl text-gray-700 mb-10" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(parseMarkdown(data.description)) }} />
     {data.button_text && (
       <a href={data.button_link} className="bg-black text-white px-10 py-5 rounded-full font-bold hover:bg-orange-600 transition-all text-lg">
         {data.button_text}
@@ -551,11 +612,12 @@ export const UnsequencedGrid = ({ data }: { data: any }) => (
           <div key={index} className={`relative w-full overflow-hidden bg-[#1c2434] group ${gridClass}`}>
             <a href={item.link || '#'} className="block w-full h-full relative">
               {item.image && (
-                <img
-                  src={getStrapiMedia(item.image)}
-                  alt={item.title || 'Grid Item'}
-                  className="object-cover w-full h-full"
-                />
+                  <Image
+                    src={getStrapiMedia(item.image)}
+                    alt={item.title || 'Grid Item'}
+                    fill
+                    className="object-cover w-full h-full"
+                  />
               )}
               {/* Orange Overlay with Title */}
               <div className="absolute inset-0 bg-[#E6602F] opacity-0 group-hover:opacity-100 transition-opacity duration-700 flex items-center justify-center p-8 text-center">
@@ -576,7 +638,7 @@ export const Quote = ({ data }: { data: any }) => (
   <section className="mb-0 p-[30px] bg-[#e6602f17] border-l-[10px] border-[#e6602f] rounded-[5px] italic">
     <div className="text-[16px] text-black leading-[1.6] font-normal prose prose-orange max-w-none" 
          style={{ fontFamily: "'Work Sans', sans-serif" }}
-         dangerouslySetInnerHTML={{ __html: parseMarkdown(data.quote_text) }} />
+         dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(parseMarkdown(data.quote_text)) }} />
     {(data.author || data.author_title) && (
       <div className="not-italic flex flex-col mt-4">
         <span className="font-bold text-black text-[16px]">{data.author}</span>
@@ -618,7 +680,7 @@ export const DynamicFAQ = async ({ data }: { data: any }) => {
                 </h3>
                 <div
                   className="text-[15px] leading-[1.7] text-[#444] font-normal [&_p]:mb-3 [&_a]:text-[#e47216] [&_a:hover]:underline"
-                  dangerouslySetInnerHTML={{ __html: parseMarkdown(faq.answer) }}
+                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(parseMarkdown(faq.answer)) }}
                 />
               </div>
             ))}
@@ -631,7 +693,7 @@ export const DynamicFAQ = async ({ data }: { data: any }) => {
                 </h3>
                 <div
                   className="leading-[1.7] text-[#444] font-normal [&_a]:text-[#e47216] [&_a:hover]:underline"
-                  dangerouslySetInnerHTML={{ __html: parseMarkdown(faq.answer) }}
+                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(parseMarkdown(faq.answer)) }}
                 />
               </div>
             ))}
@@ -655,9 +717,11 @@ export const BlogQuote = ({ data }: { data: any }) => (
     <div className="flex gap-10 items-center">
       <div className="shrink-0 min-w-[160px]">
         {data.icon ? (
-          <img 
+          <Image 
             src={getStrapiMedia(data.icon)} 
             alt="Quote Icon" 
+            width={160}
+            height={140}
             className="w-[160px] h-[140px] object-contain"
           />
         ) : (
@@ -669,7 +733,7 @@ export const BlogQuote = ({ data }: { data: any }) => (
       <div 
         className="text-[24px] leading-[40px] text-[#939393] font-normal relative [&_p]:!text-[24px] [&_p]:!leading-[40px] [&_p]:!text-[#939393]"
         style={{ fontFamily: "'Work Sans', sans-serif" }}
-        dangerouslySetInnerHTML={{ __html: parseMarkdown(data.text || '') }}
+        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(parseMarkdown(data.text || '')) }}
       />
     </div>
   </section>
@@ -692,7 +756,7 @@ export const FilledBox = ({ data }: { data: any }) => (
     >
       <div 
         className="text-left px-0 [&_p]:!mb-0 [&_p]:!text-[43px] [&_p]:!font-[300] [&_p]:!leading-[1.25] [&_p]:!text-[#e6602f] [&_p]:!text-left"
-        dangerouslySetInnerHTML={{ __html: parseMarkdown(data.text || '') }}
+        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(parseMarkdown(data.text || '')) }}
       />
     </div>
   </section>

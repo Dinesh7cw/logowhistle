@@ -4,17 +4,25 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { getStrapiMedia } from '@/lib/strapi';
-
-const navigation = [
-  { name: 'Process', href: '/process' },
-  { name: 'Pricing', href: '/pricing' },
-  { name: 'Portfolio', href: '/portfolio' },
-  { name: 'Faq', href: '/faqs' },
-  { name: 'Blog', href: '/blog' },
-];
+import Image from 'next/image';
 
 export default function NavbarClient({ globalSettings }: { globalSettings: any }) {
   const [isOpen, setIsOpen] = useState(false);
+
+  const navigation = globalSettings?.nav_links?.length > 0 
+    ? globalSettings.nav_links 
+    : [
+        { name: 'Process', href: '/process' },
+        { name: 'Pricing', href: '/pricing' },
+        { name: 'Portfolio', href: '/portfolio' },
+        { name: 'Faq', href: '/faqs' },
+        { name: 'Blog', href: '/blog' },
+      ];
+
+  const navLinks = navigation.map((item: any) => ({
+    name: item.name || item.label,
+    href: item.href
+  }));
 
   return (
     <nav className="fixed w-full z-50 bg-white transition-all duration-300">
@@ -25,10 +33,11 @@ export default function NavbarClient({ globalSettings }: { globalSettings: any }
           <div className="flex-1 flex justify-start items-center">
             <Link href="/" className="flex-shrink-0 flex items-center">
               {globalSettings?.logo && (
-                 // eslint-disable-next-line @next/next/no-img-element
-                 <img 
+                 <Image 
                    src={getStrapiMedia(globalSettings.logo)} 
                    alt={globalSettings.siteName || 'LogoWhistle'} 
+                   width={200}
+                   height={47}
                    className="h-[47px] w-auto"
                  />
               )}
@@ -37,7 +46,7 @@ export default function NavbarClient({ globalSettings }: { globalSettings: any }
           
           {/* Center: Desktop Menu */}
           <div className="hidden md:flex flex-none items-center">
-            {navigation.map((item) => (
+            {navLinks.map((item: any) => (
               <Link
                 key={item.name}
                 href={item.href}
@@ -74,7 +83,7 @@ export default function NavbarClient({ globalSettings }: { globalSettings: any }
       {isOpen && (
         <div className="md:hidden bg-white shadow-lg absolute w-full left-0 top-[90px]">
           <div className="px-4 py-4 flex flex-col space-y-4 shadow-inner">
-            {navigation.map((item) => (
+            {navLinks.map((item: any) => (
               <Link
                 key={item.name}
                 href={item.href}
@@ -97,4 +106,3 @@ export default function NavbarClient({ globalSettings }: { globalSettings: any }
     </nav>
   );
 }
-

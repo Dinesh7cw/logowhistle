@@ -33,35 +33,17 @@ export function getStrapiMedia(media: any) {
   if (url.startsWith('http')) return url;
   return `${STRAPI_URL}${url}`;
 }
-// Universal population string for all dynamic zone components and their nested media/relations
-// Optimized for Strapi 5 dynamic zones to ensure all components and their media/relations are fetched
-export const UNIVERSAL_POPULATE = [
-  'populate[sections][on][sections.blog-quote][populate]=*',
-  'populate[sections][on][sections.filled-box][populate]=*',
-  'populate[sections][on][sections.also-read][populate]=*',
-  'populate[sections][on][sections.article][populate]=*',
-  'populate[sections][on][sections.hero][populate]=*',
-  'populate[sections][on][sections.hero-intro][populate]=*',
-  'populate[sections][on][sections.gallery][populate]=*',
-  'populate[sections][on][sections.image-repeater][populate]=*',
-  'populate[sections][on][sections.content][populate]=*',
-  'populate[sections][on][sections.pricing][populate]=*',
-  'populate[sections][on][sections.pricing-tiers][populate][tiers][populate]=*',
-  'populate[sections][on][sections.faq][populate][faqs][populate]=*',
-  'populate[sections][on][sections.three-column-img-content][populate][items][populate]=*',
-  'populate[sections][on][sections.expertise-content][populate][expertise_items][populate]=*',
-  'populate[sections][on][sections.equal-grid][populate][grid_items][populate]=*',
-  'populate[sections][on][sections.unsequenced-grid][populate][grid_items][populate]=*',
-  'populate[sections][on][sections.cta][populate]=*',
-  'populate[sections][on][sections.slider][populate][slides][populate]=*',
-  'populate[sections][on][sections.image][populate]=*',
-  'populate[sections][on][sections.contact][populate]=*',
-  'populate[sections][on][sections.two-column-img-content][populate]=*',
-  'populate[sections][on][sections.image-text][populate]=*',
-  'populate[sections][on][sections.image-text-highlighted][populate]=*',
-  'populate[sections][on][sections.two-column-image][populate]=*',
-  'populate[sections][on][sections.text-highlighted][populate]=*',
-  'populate[sections][on][sections.thank-you][populate]=*',
-  'populate[sections][on][sections.quote][populate]=*',
-  'populate[sections][on][sections.about][populate]=*'
-].join('&');
+// Helper to build granular populate strings for dynamic zones
+// Usage: fetchStrapi(`pages?${getSectionsPopulate(['hero', 'content'])}`)
+export function getSectionsPopulate(components: string[] = []) {
+  if (components.length === 0) return "populate[sections][populate]=*";
+  
+  return components
+    .map(comp => `populate[sections][on][sections.${comp}][populate]=*`)
+    .join('&');
+}
+
+// Minimal universal population for common sections
+export const UNIVERSAL_POPULATE = getSectionsPopulate([
+  'hero', 'hero-intro', 'content', 'slider', 'article', 'blog-quote', 'also-read', 'pricing-tiers', 'faq', 'cta'
+]);

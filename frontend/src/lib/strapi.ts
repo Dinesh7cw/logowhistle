@@ -1,6 +1,6 @@
-const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://127.0.0.1:7000';
+const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:7000';
 
-export async function fetchStrapi(endpoint: string, options: any = {}, returnMeta: boolean = false) {
+export async function fetchStrapi(endpoint: string, options: any = {}, returnMeta: boolean = false, allow404: boolean = false) {
   const res = await fetch(`${STRAPI_URL}/api/${endpoint}`, {
     ...options,
     headers: {
@@ -11,6 +11,9 @@ export async function fetchStrapi(endpoint: string, options: any = {}, returnMet
   });
 
   if (!res.ok) {
+    if (res.status === 404 && allow404) {
+      return null;
+    }
     const text = await res.text();
     console.error(`Strapi Fetch Error (${res.status}):`, text.slice(0, 500));
     throw new Error(`Failed to fetch from Strapi: ${res.statusText} (${res.status})`);
@@ -39,7 +42,27 @@ export function getSectionsPopulate(components: string[] = []) {
   if (components.length === 0) return "populate[sections][populate]=*";
   
   return components
-    .map(comp => `populate[sections][on][sections.${comp}][populate]=*`)
+    .map(comp => {
+      // Define specific deep population requirements for components with nested media
+      const base = `populate[sections][on][sections.${comp}][populate]`;
+      
+      switch(comp) {
+        case 'unsequenced-grid':
+        case 'unequal-grid':
+        case 'equal-grid':
+          return `${base}[grid_items][populate]=*`;
+        case 'slider':
+          return `${base}[slides][populate]=*`;
+        case 'pricing-tiers':
+          return `${base}[tiers][populate]=*`;
+        case 'three-column-img-content':
+          return `${base}[items][populate]=*`;
+        case 'expertise-content':
+          return `${base}[expertise_items][populate]=*`;
+        default:
+          return `${base}=*`;
+      }
+    })
     .join('&');
 }
 

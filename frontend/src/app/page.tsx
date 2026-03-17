@@ -5,7 +5,9 @@ export default async function Home() {
   let homepage: any = null;
 
   try {
-    homepage = await fetchStrapi(`homepage?${UNIVERSAL_POPULATE}`);
+    homepage = await fetchStrapi(`homepage?${UNIVERSAL_POPULATE}`, {
+      cache: 'no-store'
+    });
   } catch (e) {
     console.error('homepage fetch failed', e);
   }

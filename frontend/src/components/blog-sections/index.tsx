@@ -527,45 +527,50 @@ export const DynamicCTA = ({ data }: { data: any }) => {
 };
 
 // Unsequenced Grid Section (Complex Portfolio Layout)
-export const UnsequencedGrid = ({ data }: { data: any }) => (
-  <section className="w-full mb-20 overflow-hidden">
-    <div className="grid grid-cols-1 md:grid-cols-12 w-full gap-0">
-      {data.grid_items?.map((item: any, index: number) => {
-        let gridClass = "md:col-span-4 h-[250px] md:h-[500px]";
-        const cycleIndex = index % 13;
+export const UnsequencedGrid = ({ data }: { data: any }) => {
+  // Only show items that have an image from Strapi — skip empty dark boxes
+  const validItems = (data.grid_items ?? []).filter((item: any) => getStrapiMedia(item.image));
 
-        if (cycleIndex === 0) {
-          gridClass = "md:col-span-8 h-[250px] md:h-[500px]";
-        } else if (cycleIndex === 5) {
-          gridClass = "md:col-span-8 md:row-span-2 h-[500px] md:h-[1000px]";
-        } else if (cycleIndex === 11) {
-          gridClass = "md:col-span-8 h-[250px] md:h-[500px]";
-        }
+  if (validItems.length === 0) return null;
 
-        return (
-          <div key={index} className={`relative w-full overflow-hidden bg-[#1c2434] group ${gridClass}`}>
-            <a href={item.link || '#'} className="block w-full h-full relative">
-              {item.image && (
-                  <Image
-                    src={getStrapiMedia(item.image)}
-                    alt={item.title || 'Grid Item'}
-                    fill
-                    className="object-cover w-full h-full"
-                  />
-              )}
-              {/* Orange Overlay with Title */}
-              <div className="absolute inset-0 bg-[#E6602F] opacity-0 group-hover:opacity-100 transition-opacity duration-700 flex items-center justify-center p-8 text-center">
-                <h3 className="text-white font-bold transition-all duration-700 font-serif" style={{ fontSize: '26px' }}>
-                  {item.title}
-                </h3>
-              </div>
-            </a>
-          </div>
-        );
-      })}
-    </div>
-  </section>
-);
+  return (
+    <section className="w-full mb-20 overflow-hidden">
+      <div className="grid grid-cols-1 md:grid-cols-12 w-full gap-0">
+        {validItems.map((item: any, index: number) => {
+          let gridClass = "md:col-span-4 h-[250px] md:h-[500px]";
+          const cycleIndex = index % 13;
+
+          if (cycleIndex === 0) {
+            gridClass = "md:col-span-8 h-[250px] md:h-[500px]";
+          } else if (cycleIndex === 5) {
+            gridClass = "md:col-span-8 md:row-span-2 h-[500px] md:h-[1000px]";
+          } else if (cycleIndex === 11) {
+            gridClass = "md:col-span-8 h-[250px] md:h-[500px]";
+          }
+
+          return (
+            <div key={index} className={`relative w-full overflow-hidden bg-[#1c2434] group ${gridClass}`}>
+              <a href={item.link || '#'} className="block w-full h-full relative">
+                <Image
+                  src={getStrapiMedia(item.image)!}
+                  alt={item.title || 'Grid Item'}
+                  fill
+                  className="object-cover w-full h-full"
+                />
+                {/* Orange Overlay with Title */}
+                <div className="absolute inset-0 bg-[#E6602F] opacity-0 group-hover:opacity-100 transition-opacity duration-700 flex items-center justify-center p-8 text-center">
+                  <h3 className="text-white font-bold transition-all duration-700 font-serif" style={{ fontSize: '26px' }}>
+                    {item.title}
+                  </h3>
+                </div>
+              </a>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+};
 
 // Quote Section
 export const Quote = ({ data }: { data: any }) => (

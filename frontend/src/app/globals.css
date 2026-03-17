@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-work-sans), "Work Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-lora), "Lora", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #000000;
+  --dark-color: #333333;
+}
+
+@layer base {
+  body, p, a, button, input, textarea, select {
+    font-family: var(--font-work-sans), "Work Sans", sans-serif;
+  }
+}
+
+p {
+  font-size: 16px !important;
+  margin-bottom: 20px !important;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+h1, h2, h3, h4, h5, h6, h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+  font-family: var(--font-lora), "Lora", serif;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 100px; }
+::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Animation helpers */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+.animate-fade-in-up { animation: fade-in-up 0.7s ease both; }
+
+/* FAQ details marker suppression */
+details > summary { list-style: none; }
+details > summary::-webkit-details-marker { display: none; }
